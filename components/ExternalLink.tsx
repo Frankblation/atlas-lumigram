@@ -9,8 +9,7 @@ export function ExternalLink({ href, ...rest }: Props) {
   return (
     <Link
       target="_blank"
-      {...rest}
-      href={href}
+ href={href}
       onPress={async (event) => {
         if (Platform.OS !== "web") {
           event.preventDefault(); // Prevents navigation in the default browser

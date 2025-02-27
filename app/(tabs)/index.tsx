@@ -17,7 +17,10 @@ const FeedItem = ({ item }) => {
   };
 
   const handleSingleTap = event => {
-    if (event.nativeEvent.state === State.ACTIVE) {}
+    if (event.nativeEvent.state === State.ACTIVE) {
+    Alert.alert("that's just one tap partner"
+    );
+    }
   };
 
   const handleDoubleTap = event => {
@@ -28,17 +31,20 @@ const FeedItem = ({ item }) => {
 
   return (
     <View style={styles.Item}>
+      {/* Single Tap Gesture Handler */}
       <TapGestureHandler
         onHandlerStateChange={handleSingleTap}
-        waitFor={doubleTapRef}
+        waitFor={doubleTapRef} // Make sure single tap waits for double tap
       >
         <View>
+          {/* Double Tap Gesture Handler */}
           <TapGestureHandler
             ref={doubleTapRef}
             numberOfTaps={2}
             onHandlerStateChange={handleDoubleTap}
           >
             <View>
+              {/* Long Press Gesture Handler */}
               <LongPressGestureHandler
                 onHandlerStateChange={handleLongPress}
                 minDurationMs={300}

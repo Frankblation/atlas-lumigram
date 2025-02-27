@@ -40,7 +40,7 @@ export default function AddPostScreen() {
           placeholderTextColor="gray"
           secureTextEntry={false}
           onChangeText={setCaption}
-          value={caption}
+          key={caption}
           style={{ color: 'black' }}
         />
 
