@@ -1,30 +1,28 @@
-import { useState } from "react";
-import { View, Text, TextInput, Pressable, StyleSheet, Image, Alert } from "react-native";
-import { Link, useRouter } from "expo-router";
+"use client"
 
-export default function Register() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const router = useRouter();
+import { useState } from "react"
+import { View, Text, TextInput, Pressable, StyleSheet } from "react-native"
+import { Link, useRouter } from "expo-router"
 
-  const handleRegister = () => {
-    if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
-      return;
-    }
-    console.log("Register attempt with:", { email, password });
-    router.replace("/(tabs)");
-  };
 
+export default function Login() {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const router = useRouter()
+
+  const handleSignIn = () => {
+    console.log("Login attempt with:", { email, password })
+    router.replace("/(tabs)")
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
-        <Image source={require("../assets/images/logo.png")} style={styles.logo} />
+        <Text style={styles.logoText}>Atlas</Text>
+        <Text style={styles.schoolText}>SCHOOL</Text>
       </View>
 
-      <Text style={styles.registerText}>Register</Text>
+      <Text style={styles.loginText}>Login</Text>
 
       <View style={styles.formContainer}>
         <TextInput
@@ -46,27 +44,18 @@ export default function Register() {
           secureTextEntry
         />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Confirm Password"
-          placeholderTextColor="#A0A0A0"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          secureTextEntry
-        />
-
-        <Pressable style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]} onPress={handleRegister}>
-          <Text style={styles.buttonText}>Sign Up</Text>
+        <Pressable style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]} onPress={handleSignIn}>
+          <Text style={styles.buttonText}>Sign in</Text>
         </Pressable>
 
-        <Link href="/login" asChild>
+        <Link href="/register" asChild>
           <Pressable style={styles.linkButton}>
-            <Text style={styles.linkButtonText}>Log Into Existing Site</Text>
+            <Text style={styles.linkButtonText}>Create a new account</Text>
           </Pressable>
         </Link>
       </View>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -75,18 +64,24 @@ const styles = StyleSheet.create({
     backgroundColor: "#050A30",
     alignItems: "center",
     justifyContent: "center",
-    padding: 0,
+    padding: 20,
   },
   logoContainer: {
     alignItems: "center",
     marginBottom: 48,
   },
-  logo: {
-    width: 240,
-    height: 150,
-    resizeMode: "contain",
+  logoText: {
+    fontSize: 64,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+    marginBottom: 4,
   },
-  registerText: {
+  schoolText: {
+    fontSize: 28,
+    color: "#4ECDC4",
+    letterSpacing: 8,
+  },
+  loginText: {
     fontSize: 28,
     color: "#FFFFFF",
     marginBottom: 24,
@@ -134,4 +129,5 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
   },
-});
+})
+
