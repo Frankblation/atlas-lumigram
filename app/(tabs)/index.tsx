@@ -3,12 +3,20 @@ import { View, Text, Image, StyleSheet, Dimensions, Alert } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { homeFeed } from "@/placeholder";
 import { LongPressGestureHandler, TapGestureHandler, State } from "react-native-gesture-handler";
+interface ItemProps {
+  item: {
+    id: string;
+    image: string;
+    caption: string;
+    createdBy: string;
+    };
+  };
 
-const FeedItem = ({ item }) => {
+const FeedItem = ({ item }: ItemProps)=> {
   const [showCaption, setShowCaption] = useState(false);
   const doubleTapRef = useRef(null);
 
-  const handleLongPress = event => {
+  const handleLongPress = (event: { nativeEvent: { state: number; }; }) => {
     if (event.nativeEvent.state === State.ACTIVE) {
       setShowCaption(true);
     } else if (event.nativeEvent.state === State.END) {
@@ -16,14 +24,14 @@ const FeedItem = ({ item }) => {
     }
   };
 
-  const handleSingleTap = event => {
+  const handleSingleTap = (event: { nativeEvent: { state: number; }; }) => {
     if (event.nativeEvent.state === State.ACTIVE) {
     Alert.alert("that's just one tap partner"
     );
     }
   };
 
-  const handleDoubleTap = event => {
+  const handleDoubleTap = (event: { nativeEvent: { state: number; }; }) => {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert("Double Tap", `You liked ${item.createdBy}'s post!`);
     }
@@ -34,7 +42,7 @@ const FeedItem = ({ item }) => {
       {/* Single Tap Gesture Handler */}
       <TapGestureHandler
         onHandlerStateChange={handleSingleTap}
-        waitFor={doubleTapRef} // Make sure single tap waits for double tap
+        waitFor={doubleTapRef}
       >
         <View>
           {/* Double Tap Gesture Handler */}

@@ -5,7 +5,7 @@ import ImagePickerComponent from '@/components/ImagePicker';
 import Animated, { FlipInEasyX } from 'react-native-reanimated';
 
 export default function AddPostScreen() {
-  const [caption, setCaption] = useState<string | undefined>();
+  const [caption, setCaption] = useState<string>("");
   const [imageUri, setImageUri] = useState<string | null>(null);
 
   const handleImageSelected = (uri: string | null) => {
@@ -22,7 +22,7 @@ export default function AddPostScreen() {
   };
 
   const handleReset = () => {
-    setCaption(undefined);
+    setCaption("");
     setImageUri(null);
   };
 
@@ -41,6 +41,7 @@ export default function AddPostScreen() {
           secureTextEntry={false}
           onChangeText={setCaption}
           key={caption}
+          value={caption}
           style={{ color: 'black' }}
         />
 
