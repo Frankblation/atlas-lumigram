@@ -1,15 +1,26 @@
-import { useState } from "react"
-import { View, Text, TextInput, Pressable, StyleSheet, Image } from "react-native"
-import { Link, useRouter } from "expo-router"
+import { useState } from "react";
+import { View, Text, TextInput, Pressable, StyleSheet, Image } from "react-native";
+import { Link, useRouter } from "expo-router";
+import { useAuth } from "@/components/AuthProvider";
+import Loading from "@/components/Loading";
 
 export default function Login() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { login } = useAuth();  // Destructure the login function from useAuth
 
-  const handleSignIn = () => {
-    console.log("Login attempt with:", { email, password })
-    router.replace("/(tabs)")
+  async function handleSignIn() {
+    setLoading(true);
+    try {
+      console.log("Login attempt with:", { email, password });
+      await login(email, password); // Call login from AuthProvider
+      router.replace('/(tabs)');  // Navigate to the authenticated screen
+    } catch (error) {
+      alert("Email or password is incorrect");
+    }
+    setLoading(false);
   }
 
   return (
@@ -51,6 +62,7 @@ export default function Login() {
           </Pressable>
         </Link>
       </View>
+      {loading && <Loading />}
     </View>
   )
 }
@@ -71,7 +83,6 @@ const styles = StyleSheet.create({
     width: 240,
     height: 150,
     resizeMode: "contain",
-
   },
   loginText: {
     fontSize: 28,

@@ -1,21 +1,34 @@
 import { useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet, Image, Alert } from "react-native";
 import { Link, useRouter } from "expo-router";
+import { useAuth } from "@/components/AuthProvider";
+
+
 
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const router = useRouter();
+  const { register } = useAuth();
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (password !== confirmPassword) {
       Alert.alert("Error", "Passwords do not match");
       return;
     }
-    console.log("Register attempt with:", { email, password });
-    router.replace("/(tabs)");
-  };
+      try {
+        console.log("Register attempt with:", { email, password });
+        await register(email, password);
+        router.replace("/(tabs)");
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          Alert.alert("Registration Failed", error.message);
+        } else {
+          Alert.alert("Registration Failed", "An unknown error occurred");
+        }
+      }
+    };
 
 
   return (
