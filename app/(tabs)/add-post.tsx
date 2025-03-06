@@ -4,6 +4,7 @@ import CustomInput from '@/components/CustomInput';
 import ImagePickerComponent from '@/components/ImagePicker';
 import Animated, { FlipInEasyX } from 'react-native-reanimated';
 import storage from '@/lib/storage';
+import { Firestore } from 'firebase/firestore';
 
 export default function AddPostScreen() {
   const [caption, setCaption] = useState<string>("");
