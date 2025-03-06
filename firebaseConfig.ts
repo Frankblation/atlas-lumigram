@@ -10,7 +10,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyA-4RLEfCWnJ2kj0mv0fp83FJ3Idsq5Cpk",
   authDomain: "lumigram-62720.firebaseapp.com",
   projectId: "lumigram-62720",
-  storageBucket: "lumigram-62720.appspot.com", // Fix typo here
+  storageBucket: "lumigram-62720.appspot.com",
   messagingSenderId: "569206890544",
   appId: "1:569206890544:web:ac23f298a49e09953f4df5",
 };
