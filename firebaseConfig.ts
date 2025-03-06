@@ -5,6 +5,7 @@ import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirestore } from "firebase/firestore"
 import { getStorage } from "firebase/storage"
 // Your Firebase configuration
+
 const firebaseConfig = {
   apiKey: "AIzaSyA-4RLEfCWnJ2kj0mv0fp83FJ3Idsq5Cpk",
   authDomain: "lumigram-62720.firebaseapp.com",
@@ -24,5 +25,6 @@ export const auth = initializeAuth(app, {
 
 //initalize Storage
 export const storage = getStorage(app);
+
 // initalize databse firestore
 export const db = getFirestore(app);

@@ -1,93 +1,86 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Pressable, Text, Alert } from 'react-native';
-import CustomInput from '@/components/CustomInput';
-import ImagePickerComponent from '@/components/ImagePicker';
-import Animated, { FlipInEasyX } from 'react-native-reanimated';
-import storage from '@/lib/storage';
-import { Firestore } from 'firebase/firestore';
+import React, { useState } from "react";
+import {
+  View,
+  StyleSheet,
+  Pressable,
+  Text,
+  TextInput,
+  Alert,
+} from "react-native";
+import storage from "@/lib/storage";
+import firestore from "@/lib/firestore";
+import { useAuth } from "@/components/AuthProvider";
+import { useImagePicker } from "@/hooks/useImagePicker";
+import Loading from "@/components/Loading";
+import { IconSymbol } from "@/components/ui/IconSymbol";
+import ImagePreview from "./ImagePreview";
 
-export default function AddPostScreen() {
-  const [caption, setCaption] = useState<string>("");
+export default function Page() {
+  const auth = useAuth();
+  const [caption, setCaption] = useState("");
   const [loading, setLoading] = useState(false);
-  const [imageUri, setImageUri] = useState<string | null>(null);
+  const { image, openImagePicker, reset } = useImagePicker();
 
-  const handleImageSelected = (uri: string | null) => {
-    console.log("Image selected:", uri);
-    setImageUri(uri);
-  };
-
-  // Function to handle image upload
-  const handleSave = async () => {
-    if (!imageUri) {
-      Alert.alert('Error', 'Please select an image first');
-      return;
-    }
+  async function save() {
+    if (!image) return;
 
     setLoading(true);
     try {
-      // Generate a unique filename for the image
-      const filename = `post_${Date.now()}.jpg`;
+      const name = image.split("/").pop() as string;
+      const { downloadUrl } = await storage.upload(image, name);
 
-      // Upload the image to Firebase Storage
-      const response = await storage.upload(imageUri, filename);
-      const downloadUrl = response?.downloadUrl || "";
+      await firestore.addPost({
+        caption,
+        image: downloadUrl,
+        createdAt: new Date(),
+        createdBy: auth.user?.uid ?? "",
+      });
 
-      console.log("Image uploaded successfully:", downloadUrl);
-      Alert.alert('Success', 'Post created successfully!');
-
-      // Reset the form after successful upload
+      Alert.alert("Success", "Post added");
       resetForm();
     } catch (error) {
-      console.error("Error uploading image:", error);
-      Alert.alert('Error', 'Failed to upload image. Please try again.');
+      Alert.alert("Error", "Failed to upload post");
+      console.error(error);
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  // Reset the form
   const resetForm = () => {
     setCaption("");
-    setImageUri(null);
+    reset();
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.imageContainer}>
-        <ImagePickerComponent onImageSelected={handleImageSelected} imageUri={imageUri} />
+      <ImagePreview src={image} />
+
+      <View style={styles.footerContainer}>
+        {!image ? (
+          <Pressable style={styles.uploadButton} onPress={openImagePicker}>
+            <IconSymbol size={28} name="photo" color="white" />
+            <Text style={styles.uploadText}>Choose a photo</Text>
+          </Pressable>
+        ) : (
+          <View style={styles.captionContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Add a caption"
+              placeholderTextColor="#888"
+              value={caption}
+              onChangeText={setCaption}
+            />
+            <Pressable style={styles.saveButton} onPress={save}>
+              <Text style={styles.saveText}>Save</Text>
+            </Pressable>
+            <Pressable style={styles.resetButton} onPress={resetForm}>
+              <Text style={styles.resetText}>Reset</Text>
+            </Pressable>
+          </View>
+        )}
       </View>
 
-      <View style={styles.buttonContainerTwo}>
-        <CustomInput
-          placeholder="Add a caption"
-          placeholderTextColor="gray"
-          secureTextEntry={false}
-          onChangeText={setCaption}
-          value={caption}
-          style={{ color: 'black' }}
-        />
-
-        <View style={styles.buttonContainer}>
-          <Animated.View entering={FlipInEasyX.duration(200)}>
-            <Pressable
-              style={[styles.button, styles.buttonOne]}
-              onPress={handleSave} // Trigger the save/upload function
-              disabled={loading}
-            >
-              <Text style={styles.text}>{loading ? 'Uploading...' : 'Save'}</Text>
-            </Pressable>
-          </Animated.View>
-
-          <Animated.View entering={FlipInEasyX.duration(300)}>
-            <Pressable
-              style={[styles.button, styles.buttonTwo]}
-              onPress={resetForm} // Reset the form
-            >
-              <Text style={{ color: "black" }}>Reset</Text>
-            </Pressable>
-          </Animated.View>
-        </View>
-      </View>
+      {loading && <Loading />}
     </View>
   );
 }
@@ -95,39 +88,68 @@ export default function AddPostScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    gap: 10,
-    height: "100%",
-    padding: 16,
-    backgroundColor: 'white',
-  },
-  imageContainer: {
-    alignItems: 'center',
-  },
-  buttonContainer: {
-    display: "flex",
-    width: "100%",
-    gap: 10,
-    marginTop: 10,
-  },
-  buttonContainerTwo: {
-    paddingLeft: 20,
-    paddingRight: 20,
-  },
-  text: {
-    color: "white",
-    textAlign: "center",
-  },
-  button: {
-    width: "100%",
-    padding: 20,
+    justifyContent: "center",
     alignItems: "center",
+    padding: 20,
+  },
+  footerContainer: {
+    flex: 1,
+    width: "100%",
+    alignItems: "center",
+    marginTop: 5,
+  },
+  captionContainer: {
+    width: "100%",
+    alignItems: "center",
+  },
+  input: {
+    width: "100%",
+    height: 55,
     borderRadius: 5,
+    paddingHorizontal: 15,
+    marginBottom: 10,
+    borderColor: "#3FBFA8",
+    borderWidth: 1,
+    color: "#333",
+    fontSize: 16,
   },
-  buttonOne: {
-    backgroundColor: "#1ED2AF",
+  saveButton: {
+    width: "90%",
+    height: 60,
+    backgroundColor: "#3FBFA8",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 8,
+    marginVertical: 5,
   },
-  buttonTwo: {
-    borderWidth: 2,
-    borderColor: "black",
+  saveText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+  },
+  resetButton: {
+    width: "90%",
+    height: 60,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 8,
+    marginVertical: 5,
+  },
+  resetText: {
+    color: "black",
+    fontSize: 16,
+  },
+  uploadButton: {
+    flexDirection: "row",
+    width: "90%",
+    height: 60,
+    backgroundColor: "#3FBFA8",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 8,
+    gap: 10,
+  },
+  uploadText: {
+    color: "#FFFFFF",
+    fontSize: 16,
   },
 });
