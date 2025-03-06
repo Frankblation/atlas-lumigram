@@ -3,6 +3,10 @@ import { View, StyleSheet, Pressable, Text, Alert } from 'react-native';
 import CustomInput from '@/components/CustomInput';
 import ImagePickerComponent from '@/components/ImagePicker';
 import Animated, { FlipInEasyX } from 'react-native-reanimated';
+import upload from "@/lib/storage";
+import storage from '@/lib/storage';
+
+
 
 export default function AddPostScreen() {
   const [caption, setCaption] = useState<string>("");
@@ -13,12 +17,29 @@ export default function AddPostScreen() {
     setImageUri(uri);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!imageUri) {
       Alert.alert('Error', 'Please select an image first');
       return;
     }
-    Alert.alert('Success', 'Post created successfully!');
+
+    try {
+      // Generate a unique filename for the image
+      const filename = `post_${Date.now()}.jpg`;
+
+      // Upload the image to Firebase Storage
+      const response = await storage.upload(imageUri, filename);
+      const downloadUrl = response?.downloadUrl || "";
+
+      console.log("Image uploaded successfully:", downloadUrl);
+      Alert.alert('Success', 'Post created successfully!');
+
+      // Reset the form after successful upload
+      handleReset();
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      Alert.alert('Error', 'Failed to upload image. Please try again.');
+    }
   };
 
   const handleReset = () => {
@@ -108,4 +129,3 @@ const styles = StyleSheet.create({
     borderColor: "black",
   },
 });
-

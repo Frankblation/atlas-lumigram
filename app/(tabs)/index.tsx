@@ -3,6 +3,8 @@ import { View, Text, Image, StyleSheet, Dimensions, Alert } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { homeFeed } from "@/placeholder";
 import { LongPressGestureHandler, TapGestureHandler, State } from "react-native-gesture-handler";
+import { useAuth } from "@/components/AuthProvider";
+
 interface ItemProps {
   item: {
     id: string;
@@ -11,6 +13,7 @@ interface ItemProps {
     createdBy: string;
     };
   };
+
 
 const FeedItem = ({ item }: ItemProps)=> {
   const [showCaption, setShowCaption] = useState(false);
@@ -75,8 +78,10 @@ const FeedItem = ({ item }: ItemProps)=> {
 };
 
 export default function HomeScreen() {
+  const auth = useAuth();
   return (
     <View style={styles.container}>
+      <Text> {auth.user?.uid}</Text>
       <FlashList
         data={homeFeed}
         renderItem={({ item }) => <FeedItem item={item} />}
