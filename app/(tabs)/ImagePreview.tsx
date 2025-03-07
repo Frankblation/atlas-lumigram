@@ -1,45 +1,43 @@
-import React from "react";
-import { View, Image, StyleSheet } from "react-native";
-
-const placeholder = require("../../assets/images/placeholder.png");
+import { View, Image, StyleSheet, Text } from "react-native"
 
 interface ImagePreviewProps {
   src?: string;
 }
 
-const ImagePreview: React.FC<ImagePreviewProps> = ({ src }) => {
+export default function ImagePreview({ src }: ImagePreviewProps) {
+  if (!src) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.placeholder}>No image selected</Text>
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
-      {src ? (
-        <Image source={{ uri: src }} style={styles.image} />
-      ) : (
-        <Image source={placeholder} style={styles.placeholderImage} resizeMode="contain" />
-      )}
+      <Image source={{ uri: src }} style={styles.image} />
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     width: "100%",
+    height: 300,
+    backgroundColor: "#f0f0f0",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 20,
-    padding: 20,
-    margin: 20,
+    borderRadius: 8,
+    overflow: "hidden",
   },
   image: {
     width: "100%",
     height: "100%",
-    borderRadius: 30,
+    resizeMode: "cover",
   },
-  placeholderImage: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 30,
+  placeholder: {
+    color: "#888",
+    fontSize: 16,
   },
-});
-
-export default ImagePreview;
+})
 

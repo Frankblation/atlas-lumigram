@@ -1,59 +1,65 @@
-import React, { useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Pressable,
-  Text,
-  TextInput,
-  Alert,
-} from "react-native";
-import storage from "@/lib/storage";
-import firestore from "@/lib/firestore";
-import { useAuth } from "@/components/AuthProvider";
-import { useImagePicker } from "@/hooks/useImagePicker";
-import Loading from "@/components/Loading";
-import { IconSymbol } from "@/components/ui/IconSymbol";
-import ImagePreview from "./ImagePreview";
+"use client"
+
+import { useState } from "react"
+import { View, StyleSheet, Pressable, Text, TextInput, Alert } from "react-native"
+import storage from "@/lib/storage" // Make sure this path is correct
+import firestore from "@/lib/firestore" // Make sure this path is correct
+import { useAuth } from "@/components/AuthProvider"
+import { useImagePicker } from "@/hooks/useImagePicker"
+import Loading from "@/components/Loading"
+import { IconSymbol } from "@/components/ui/IconSymbol"
+import ImagePreview from "./ImagePreview"
 
 export default function Page() {
-  const auth = useAuth();
-  const [caption, setCaption] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { image, openImagePicker, reset } = useImagePicker();
+  const auth = useAuth()
+  const [caption, setCaption] = useState("")
+  const [loading, setLoading] = useState(false)
+  const { image, openImagePicker, reset } = useImagePicker()
 
   async function save() {
-    if (!image) return;
+    if (!image) {
+      Alert.alert("Error", "Please select an image first")
+      return
+    }
 
-    setLoading(true);
     try {
-      const name = image.split("/").pop() as string;
-      const { downloadUrl } = await storage.upload(image, name);
+      setLoading(true)
+      console.log("Starting upload for image:", image)
 
+      const name = image.split("/").pop() as string
+      console.log("Image name:", name)
+
+      // Upload to storage
+      const { downloadUrl } = await storage.upload(image, name)
+      console.log("Upload successful, download URL:", downloadUrl)
+
+      // Save to Firestore
       await firestore.addPost({
         caption,
         image: downloadUrl,
         createdAt: new Date(),
         createdBy: auth.user?.uid ?? "",
-      });
+      })
+      console.log("Post saved to Firestore")
 
-      Alert.alert("Success", "Post added");
-      resetForm();
+      Alert.alert("Success", "Post added")
+      resetForm()
     } catch (error) {
-      Alert.alert("Error", "Failed to upload post");
-      console.error(error);
+      console.error("Error in save function:", error)
+      Alert.alert("Error", `Failed to upload post: ${error instanceof Error ? error.message : "Unknown error"}`)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   const resetForm = () => {
-    setCaption("");
-    reset();
-  };
+    setCaption("")
+    reset()
+  }
 
   return (
     <View style={styles.container}>
-      <ImagePreview src={image} />
+      <ImagePreview src={image || "/placeholder.svg"} />
 
       <View style={styles.footerContainer}>
         {!image ? (
@@ -82,7 +88,7 @@ export default function Page() {
 
       {loading && <Loading />}
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -152,4 +158,5 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
   },
-});
+})
+

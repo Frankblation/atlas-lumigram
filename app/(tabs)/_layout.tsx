@@ -71,6 +71,14 @@ export default function TabLayout() {
           href:null,
         }}
       />
+
+      <Tabs.Screen
+        name="image-preview"
+        options={{
+          href: null, // Prevents it from appearing in navigation links
+          tabBarIcon: () => null, // Hides it from the tab bar
+        }}
+      />
     </Tabs>
   );
 }

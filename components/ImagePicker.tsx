@@ -55,14 +55,14 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({
     <View style={styles.container}>
       {imageUri ? (
         <View style={styles.imagePreviewContainer}>
-          <Image 
-            source={{ uri: imageUri }} 
-            style={styles.imagePreview} 
+          <Image
+            source={{ uri: imageUri }}
+            style={styles.imagePreview}
           />
         </View>
       ) : (
-        <Pressable 
-          style={[styles.button, styles.buttonOne]} 
+        <Pressable
+          style={[styles.button, styles.buttonOne]}
           onPress={pickImage}
         >
           <Text style={styles.text}>Select image from gallery</Text>
