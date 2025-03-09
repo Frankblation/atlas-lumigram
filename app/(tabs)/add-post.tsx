@@ -1,14 +1,13 @@
-"use client"
 
 import { useState } from "react"
 import { View, StyleSheet, Pressable, Text, TextInput, Alert } from "react-native"
-import storage from "@/lib/storage" // Make sure this path is correct
-import firestore from "@/lib/firestore" // Make sure this path is correct
+import storage from "@/lib/storage"
+import firestore from "@/lib/firestore"
 import { useAuth } from "@/components/AuthProvider"
 import { useImagePicker } from "@/hooks/useImagePicker"
 import Loading from "@/components/Loading"
 import { IconSymbol } from "@/components/ui/IconSymbol"
-import ImagePreview from "./ImagePreview"
+import ImagePreview from "./ImagePreview";
 
 export default function Page() {
   const auth = useAuth()
@@ -29,7 +28,6 @@ export default function Page() {
       const name = image.split("/").pop() as string
       console.log("Image name:", name)
 
-      // Upload to storage
       const { downloadUrl } = await storage.upload(image, name)
       console.log("Upload successful, download URL:", downloadUrl)
 
@@ -38,8 +36,8 @@ export default function Page() {
         caption,
         image: downloadUrl,
         createdAt: new Date(),
-        createdBy: auth.user?.uid ?? "",
-      })
+        createdBy: auth.user?.uid!!,
+      });
       console.log("Post saved to Firestore")
 
       Alert.alert("Success", "Post added")
